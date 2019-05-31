@@ -83,26 +83,27 @@ class gamehandler():
         
     def playHand(self):
         while self.flops != 6:
+            self.botBet()
             for players in range(len(self.playerlist)):
                 print("\n{} cards:".format(self.playerlist[players].name))
                 print("MONEY:{}".format(self.playerlist[players].moneyAMT))
-                self.playerlist[players].showHand() if (self.playerlist[players].name == "Ki") else print("[][]")
+                self.playerlist[players].showHand() if (self.playerlist[players].name == "Ki") else (print("[][]"))
             if self.progress == True:
                 print("\nFLOP:")
                 for i in range(self.flops):
                     self.flopturnriver[i].show()
             print("\nPOT:"+str(self.pot))
-            self.botBet()
+#             self.botBet()
             self.betting = False
-            self.raiseInput = 0
-            self.userInput = input("\n(1)Check/Call\n(2)Fold\n(3)Raise\n: ")
-            self.actions = {
-                "1": lambda: self.checkCall(),
-                "2": lambda: self.fold(),
-                "3": lambda: self.Raise()
+            userInput = input("\n(1)Check/Call\n(2)Fold\n(3)Raise\n: ")
+            actions = {
+                "1": self.checkCall,
+                "2": self.fold,
+                "3": self.Raise
                 }
-            self.data = self.actions.get(self.userInput) if self.actions.get(self.userInput) else self.playHand()
-            self.data()
+            if userInput not in actions.keys():
+                self.playHand()
+            actions[userInput]()
             
     def checkCall(self):
         print("\n" * 50)
@@ -130,31 +131,24 @@ class gamehandler():
             self.betting = True
         
     def botBet(self):
-        self.tempBot = ""
         if self.betting:
-            r1 = bool(random.getrandbits(1))
-            r2 = bool(random.getrandbits(1))
-            if r1:
-                for i in range(len(self.playerlist)-1):
-                    if self.playerlist[i].name != "Ki":
-                        if self.playerlist[i].moneyAMT >= self.raiseInput:
-                            self.playerlist[i].moneyAMT -= self.raiseInput
+            for player in self.playerlist:
+                if player.name != "Ki":
+                    r = bool(random.getrandbits(1))
+                    if r:
+                        if player.moneyAMT >= self.raiseInput:
+                            player.moneyAMT -= self.raiseInput
                             self.pot += self.raiseInput
-                            self.tempBot = self.playerlist[i].name
-                        else:
-                            self.botFold(self.playerlist[i])
-            if r2:
-                for i in range(len(self.playerlist)):
-                    if self.playerlist[i].name != "Ki" and self.playerlist[i].name != self.tempBot:
-                        if self.playerlist[i].moneyAMT >= self.raiseInput:                            
-                            self.playerlist[i].moneyAMT -= self.raiseInput
-                            self.pot += self.raiseInput
-                            self.tempBot = self.playerlist[i].name
-                        else:
-                            self.botFold(self.playerlist[i])
-                                                         
-    def botFold(self, botthatfolded):
-        botthatfolded.didFold = True
+                        elif player.moneyAMT != 0:
+                            remainder = self.raiseInput - player.moneyAMT
+                            player.moneyAMT -= remainder
+                            self.pot += remainder
+                    else:
+                        isFold(player)
+                            
+            self.raiseInput = 0
+    def isFold(self, playerthatfolded):
+        playerthatfolded.didFold = True
         pass #Continue later
 
 
