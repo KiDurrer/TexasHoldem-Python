@@ -53,6 +53,7 @@ class player():
             c.show()
             
 class gamehandler():
+    foldedbots = 0
     progress = False
     flops = 3
     won = False
@@ -153,27 +154,24 @@ class gamehandler():
                                 player.moneyAMT -= remainder
                                 self.pot += remainder
                         else:
-                            self.botFold(player)     
-                    else:
-                        pass
-            self.raiseInput = 0
-            
+                            self.botFold(player)
+                            self.foldedbots += 1 
+                self.raiseInput = 0
+            self.checkbotFold()
+
     def botFold(self, botthatfolded):
         botthatfolded.didFold = True
-        foldedbots = 0 
-        for players in self.playerlist:
-            if players.name != "Ki":
-                if players.didFold == True:
-                    foldedbots += 1
-        if foldedbots == (len(self.playerlist) - 1):
+        # pass #Continue later
+    def checkbotFold(self):
+        if self.foldedbots == 2:
             print("Every bot folded")
             self.flops = 6
             for players in self.playerlist:
                 if players.name == "Ki":
                     players.moneyAMT += self.pot
+                    self.foldedbots = 0
                     self.pot = 0
-                    self.nextHand()
-        pass #Continue later
+                    self.nextHand()        
     
     def botRaise(self):
         pass
