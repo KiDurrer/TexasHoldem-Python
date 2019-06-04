@@ -85,17 +85,15 @@ class gamehandler():
     def playHand(self):
         while self.flops != 6:
             self.botBet()
-            for players in range(len(self.playerlist)):
-                print("\n{} cards:".format(self.playerlist[players].name))
-                print("MONEY:{}".format(self.playerlist[players].moneyAMT))
-                #FINISH ThIS ALGORITHM
-                if self.playerlist[players].name == "Ki":
-                    self.playerlist[players].showHand()
-                elif self.playerlist[players].didFold == True:
-                    print(self.playerlist[players].botfoldState[1])
+            for players in self.playerlist:
+                print("\n{} cards:".format(players.name))
+                print("MONEY:{}".format(players.moneyAMT))
+                if players.name == "Ki":
+                    players.showHand()
+                elif players.didFold == True:
+                    print(players.botfoldState[1])
                 else:
-                    print(self.playerlist[players].botfoldState[0])
-#                 self.playerlist[players].showHand() if (self.playerlist[players].name == "Ki") else (print(self.playerlist[players].botfoldState[0]))
+                    print(players.botfoldState[0])        
             if self.progress == True:
                 print("\nFLOP:")
                 for i in range(self.flops):
@@ -112,13 +110,13 @@ class gamehandler():
             if userInput not in actions.keys():
                 self.playHand()
             actions[userInput]()
-            
+        
     def checkCall(self):
         print("\n" * 50)
         if self.progress == True:
             if self.flops == 5:
                 self.flops +=1
-                self.showAll()
+                self.nextHand()
             else:
                 self.flops +=1 
         self.progress = True
@@ -129,11 +127,13 @@ class gamehandler():
         self.showAll()
         
     def Raise(self):
+        
         self.raiseInput = int(input("\nEnter bet: "))
         if self.raiseInput > self.userPlayer.moneyAMT:
             print("Insufficient Funds")
             self.Raise()
         else:
+            self.checkCall()
             self.userPlayer.moneyAMT -= self.raiseInput
             self.pot +=self.raiseInput
             self.betting = True
@@ -157,16 +157,45 @@ class gamehandler():
                     else:
                         pass
             self.raiseInput = 0
+            
     def botFold(self, botthatfolded):
         botthatfolded.didFold = True
+        foldedbots = 0 
+        for players in self.playerlist:
+            if players.name != "Ki":
+                if players.didFold == True:
+                    foldedbots += 1
+        if foldedbots == (len(self.playerlist) - 1):
+            print("Every bot folded")
+            self.flops = 6
+            for players in self.playerlist:
+                if players.name == "Ki":
+                    players.moneyAMT += self.pot
+                    self.pot = 0
+                    self.nextHand()
         pass #Continue later
     
-    def botRaise():
+    def botRaise(self):
         pass
         #TODO
         #make abstraction to randomize bot raise frequency
-    
-
+    def nextHand(self):
+        self.progress = False
+        self.flops = 3
+        self.flopturnriver = []
+        for players in self.playerlist:
+            if players.moneyAMT != 0:
+                players.didFold = False
+            players.hand = []
+            if self.pot != 0:                    #DELETE THIS
+                if players.name == "Ki":         #COME UP WITH CALC FOR WINNER
+                    players.moneyAMT += self.pot #THIS IS JUST HERE BECAUSE ITS NOT
+                    self.pot = 0                 #MADE YET
+        deck = Deck()
+        deck.shuffle()
+        greg.deal(deck)
+        greg.playHand()
+        
 """
 TODO
 
@@ -181,7 +210,7 @@ GOOD WORK
 
 deck = Deck()
 deck.shuffle()
-
+# maincharacter = input("Enter your name")
 ply1 = player("Michael")
 ply2 = player("Max")
 ply3 = player("Ki") #User Player
