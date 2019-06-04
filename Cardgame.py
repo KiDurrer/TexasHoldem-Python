@@ -44,6 +44,7 @@ class player():
         self.moneyAMT = 100
         self.isDealer = False
         self.didFold = False
+        self.botfoldState = ["[][]","folded"]
     def draw(self, deck):
         self.hand.append(deck.drawcard())
         
@@ -87,7 +88,14 @@ class gamehandler():
             for players in range(len(self.playerlist)):
                 print("\n{} cards:".format(self.playerlist[players].name))
                 print("MONEY:{}".format(self.playerlist[players].moneyAMT))
-                self.playerlist[players].showHand() if (self.playerlist[players].name == "Ki") else (print("[][]"))
+                #FINISH ThIS ALGORITHM
+                if self.playerlist[players].name == "Ki":
+                    self.playerlist[players].showHand()
+                elif self.playerlist[players].didFold == True:
+                    print(self.playerlist[players].botfoldState[1])
+                else:
+                    print(self.playerlist[players].botfoldState[0])
+#                 self.playerlist[players].showHand() if (self.playerlist[players].name == "Ki") else (print(self.playerlist[players].botfoldState[0]))
             if self.progress == True:
                 print("\nFLOP:")
                 for i in range(self.flops):
@@ -134,28 +142,39 @@ class gamehandler():
         if self.betting:
             for player in self.playerlist:
                 if player.name != "Ki":
-                    r = bool(random.getrandbits(1))
-                    if r:
-                        if player.moneyAMT >= self.raiseInput:
-                            player.moneyAMT -= self.raiseInput
-                            self.pot += self.raiseInput
-                        elif player.moneyAMT != 0:
-                            remainder = self.raiseInput - player.moneyAMT
-                            player.moneyAMT -= remainder
-                            self.pot += remainder
+                    if player.didFold == False:
+                        r = bool(random.getrandbits(1))
+                        if r:
+                            if player.moneyAMT >= self.raiseInput:
+                                player.moneyAMT -= self.raiseInput
+                                self.pot += self.raiseInput
+                            elif player.moneyAMT != 0:
+                                remainder = self.raiseInput - player.moneyAMT
+                                player.moneyAMT -= remainder
+                                self.pot += remainder
+                        else:
+                            self.botFold(player)     
                     else:
-                        isFold(player)
-                            
+                        pass
             self.raiseInput = 0
-    def isFold(self, playerthatfolded):
-        playerthatfolded.didFold = True
+    def botFold(self, botthatfolded):
+        botthatfolded.didFold = True
         pass #Continue later
-
+    
+    def botRaise():
+        pass
+        #TODO
+        #make abstraction to randomize bot raise frequency
+    
 
 """
-FINISH FOLD SYSTEM
-FINISH RAISE SYSTEM
+TODO
 
+FINISH FOLD SYSTEM
+
+somewhat fixed - FINISH RAISE SYSTEm
+
+REWRITE MAIN LOOP 
 GOOD WORK
 """
 
