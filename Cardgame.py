@@ -84,7 +84,7 @@ class gamehandler():
             self.flopturnriver[i].show()
         
     def playHand(self):
-        while self.flops != 6:
+        while self.flops <= 6:
             self.botBet()
             for players in self.playerlist:
                 print("\n{} cards:".format(players.name))
@@ -128,7 +128,6 @@ class gamehandler():
         self.showAll()
         
     def Raise(self):
-        
         self.raiseInput = int(input("\nEnter bet: "))
         if self.raiseInput > self.userPlayer.moneyAMT:
             print("Insufficient Funds")
@@ -136,7 +135,7 @@ class gamehandler():
         else:
             self.checkCall()
             self.userPlayer.moneyAMT -= self.raiseInput
-            self.pot +=self.raiseInput
+            self.pot += self.raiseInput
             self.betting = True
         
     def botBet(self):
@@ -156,7 +155,7 @@ class gamehandler():
                         else:
                             self.botFold(player)
                             self.foldedbots += 1 
-                self.raiseInput = 0
+            self.raiseInput = 0
             self.checkbotFold()
 
     def botFold(self, botthatfolded):
@@ -165,6 +164,7 @@ class gamehandler():
     def checkbotFold(self):
         if self.foldedbots == 2:
             print("Every bot folded")
+            self.betting = False
             self.flops = 6
             for players in self.playerlist:
                 if players.name == "Ki":
@@ -196,11 +196,8 @@ class gamehandler():
         
 """
 TODO
-
 FINISH FOLD SYSTEM
-
 somewhat fixed - FINISH RAISE SYSTEm
-
 REWRITE MAIN LOOP 
 GOOD WORK
 """
