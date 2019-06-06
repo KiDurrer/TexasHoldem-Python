@@ -64,6 +64,7 @@ class gamehandler():
         self.playerlist = playerlist
         self.amtCardsDrawn = 2
         self.flopturnriver = []
+        self.flopprogress = []
         for i in range(len(self.playerlist)):
             if self.playerlist[i].name == "Ki":
                 self.userPlayer = self.playerlist[i]
@@ -84,6 +85,7 @@ class gamehandler():
             self.flopturnriver[i].show()
         
     def playHand(self):
+        self.flopprogress = []
         while self.flops <= 6:
             self.botBet()
             for players in self.playerlist:
@@ -99,6 +101,7 @@ class gamehandler():
                 print("\nFLOP:")
                 for i in range(self.flops):
                     self.flopturnriver[i].show()
+#                     self.flopprogress[i].append(self.flopturnriver[i]) FIX THIS
             print("\nPOT:"+str(self.pot))
 #             self.botBet()
             self.betting = False
@@ -111,7 +114,7 @@ class gamehandler():
             if userInput not in actions.keys():
                 self.playHand()
             actions[userInput]()
-        
+            self.calcWinner()
     def checkCall(self):
         print("\n" * 50)
         if self.progress == True:
@@ -194,6 +197,26 @@ class gamehandler():
         greg.deal(deck)
         greg.playHand()
         
+    def calcWinner(self):
+        
+        for player in self.playerlist:
+            if player.hand[0].val == player.hand[1].val:
+                print("Pair")
+        print(self.flopprogress)
+    def compareHandValue(self, hands):
+        
+        cardcombos = {
+            "highcard":1,
+            "onepair":2,
+            "twopair":3,
+            "threekind":4,
+            "straight":5,
+            "flish":6,
+            "fullhouse":7,
+            "fourkind":8,
+            "straightflush":9,
+            "royalflush":10
+        }
 """
 TODO
 FINISH FOLD SYSTEM
@@ -216,3 +239,18 @@ greg = gamehandler(players)
 greg.deal(deck)
 # greg.showAll() // Shows everybodys hand
 greg.playHand()
+
+
+
+# playershand = []
+#         for players in self.playerlist:
+#             for card in players.hand:
+#                 playershand.append(Card(cards.val,cards.suit))
+#                 
+#         hands = list(zip(playershand[::2], playershand[1::2]))
+# #         for hand in hands:
+# #             print(hand[2])
+# #         for i in self.flopturnriver:
+# #             print(hands[0][2])
+# #         print(self.flopturnriver)
+#         self.compareHandValue(hands)
